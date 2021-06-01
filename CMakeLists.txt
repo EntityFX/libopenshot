@@ -101,7 +101,8 @@ endif()
 #### Work around a GCC < 9 bug with handling of _Pragma() in macros
 #### See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
 if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
-    (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "9.0.0"))
+    (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "9.0.0") AND
+    (NOT ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "e2k"))
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-integrated-cpp")
 endif()
 
@@ -139,7 +140,11 @@ endif()
 ### Process subdirectories
 ###
 add_subdirectory(src)
-add_subdirectory(examples)
+
+if (NOT ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "e2k")
+  add_subdirectory(examples)
+endif()
+
 add_subdirectory(bindings)
 
 ###
@@ -194,7 +199,9 @@ if(BUILD_TESTING)
   if(VERBOSE_TESTS)
     list(APPEND CTEST_OPTIONS "-VV")
   endif()
-  add_subdirectory(tests)
+  if (NOT ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "e2k")
+    add_subdirectory(tests)
+  endif()
 endif()
 add_feature_info("Unit tests" ${BUILD_TESTING} "Compile unit tests for library functions")
 
